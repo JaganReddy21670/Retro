@@ -42,7 +42,14 @@ ARUCO_DICT = "DICT_4X4_50"
 ARUCO_MARKER_IDS = [0, 1, 2, 3]
 
 # ROI Padding (percentage around detected markers)
-ROI_PADDING_PERCENT = 10  # Add 10% padding around markers
+# Positive values expand the box, Negative values shrink the box
+# For example, to cut off markers on the right but keep the left intact:
+ROI_PADDING = {
+    "top": -5,    # Shrink top by 5%
+    "bottom": -5, # Shrink bottom by 5%
+    "left": 0,    # Leave left exactly as is
+    "right": -15  # Shrink right by 15% to cut off the markers
+}
 
 
 # ============================================================
@@ -143,12 +150,19 @@ def validate_config():
     if LOG_LEVEL not in ["DEBUG", "INFO", "WARNING", "ERROR"]:
         errors.append("LOG_LEVEL must be one of: DEBUG, INFO, WARNING, ERROR")
     
-    # ArUco settings
+    # ArUco Config Validation
     if not isinstance(ARUCO_MARKER_IDS, list) or len(ARUCO_MARKER_IDS) < 3:
         errors.append("ARUCO_MARKER_IDS must be a list with at least 3 marker IDs")
     
-    if not (0 <= ROI_PADDING_PERCENT <= 50):
-        errors.append("ROI_PADDING_PERCENT must be between 0 and 50")
+    expected_keys = {"top", "bottom", "left", "right"}
+    if not isinstance(ROI_PADDING, dict) or not expected_keys.issubset(ROI_PADDING.keys()):
+        errors.append("ROI_PADDING must be a dictionary containing 'top', 'bottom', 'left', 'right'")
+    else:
+        for key in expected_keys:
+            val = ROI_PADDING[key]
+            # Allow negative padding (up to -50% to prevent full collapse) and positive padding
+            if not (-50 <= val <= 100):
+                errors.append(f"ROI_PADDING '{key}' must be between -50 and 100")
     
     # Raise error if any validation failed
     if errors:

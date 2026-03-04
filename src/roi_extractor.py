@@ -144,22 +144,24 @@ def extract_roi(image, cached_pts=None):
         roi_w = int(x_coords.max() - x_coords.min())
         roi_h = int(y_coords.max() - y_coords.min())
 
-        # Padding
-        pad_frac = config.ROI_PADDING_PERCENT / 100.0
-        pad_w = int(roi_w * pad_frac)
-        pad_h = int(roi_h * pad_frac)
+        # Non-uniform Padding (positive expands, negative shrinks)
+        pad_top = int(roi_h * (config.ROI_PADDING.get("top", 0) / 100.0))
+        pad_bottom = int(roi_h * (config.ROI_PADDING.get("bottom", 0) / 100.0))
+        pad_left = int(roi_w * (config.ROI_PADDING.get("left", 0) / 100.0))
+        pad_right = int(roi_w * (config.ROI_PADDING.get("right", 0) / 100.0))
 
-        # Destination points with padding
+        # Destination points with padding applied independently
+        # pts_dst maps to: [TL, TR, BR, BL]
         pts_dst = np.float32([
-            [-pad_w, -pad_h],
-            [roi_w + pad_w, -pad_h],
-            [roi_w + pad_w, roi_h + pad_h],
-            [-pad_w, roi_h + pad_h],
+            [-pad_left, -pad_top],                       # Top-left
+            [roi_w + pad_right, -pad_top],               # Top-right
+            [roi_w + pad_right, roi_h + pad_bottom],     # Bottom-right
+            [-pad_left, roi_h + pad_bottom],             # Bottom-left
         ])
 
-        # Perspective transform
-        out_w = roi_w + 2 * pad_w
-        out_h = roi_h + 2 * pad_h
+        # Perspective transform (output size based on padding adjustments)
+        out_w = roi_w + pad_left + pad_right
+        out_h = roi_h + pad_top + pad_bottom
         matrix = cv2.getPerspectiveTransform(pts_source, pts_dst)
         roi = cv2.warpPerspective(image, matrix, (out_w, out_h))
 
