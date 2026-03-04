@@ -57,8 +57,8 @@ ROI_PADDING = {
 POST_CROP_TRIM_PX = {
     "top": 0,     # Pixels to cut from the top
     "bottom": 0,  # Pixels to cut from the bottom
-    "left": 25,    # Pixels to cut from the left (e.g., to shave off a visible marker line)
-    "right": 25    # Pixels to cut from the right
+    "left": 50,    # Pixels to cut from the left (e.g., to shave off a visible marker line)
+    "right": 50    # Pixels to cut from the right
 }
 
 
