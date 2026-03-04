@@ -47,8 +47,8 @@ ARUCO_MARKER_IDS = [0, 1, 2, 3]
 ROI_PADDING = {
     "top": 0,    # Shrink top 
     "bottom": 0, # Shrink bottom 
-    "left": 5,  
-    "right": 5  
+    "left": 6,  
+    "right": -6  
 }
 
 
