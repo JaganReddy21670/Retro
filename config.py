@@ -47,8 +47,8 @@ ARUCO_MARKER_IDS = [0, 1, 2, 3]
 ROI_PADDING = {
     "top": -5,    # Shrink top by 5%
     "bottom": -5, # Shrink bottom by 5%
-    "left": 0,    # Leave left exactly as is
-    "right": -15  # Shrink right by 15% to cut off the markers
+    "left": -10,  # Shrink left side inwards by 10%
+    "right": -20  # Shrink right by 20% to completely hide the markers
 }
 
 
